@@ -59,6 +59,7 @@
       .then(function (r) { return r.json(); })
       .then(function (d) {
         typing.remove();
+        if (d && d.silent) return; // the chat already said goodbye
         if (!d || !d.reply) throw new Error((d && d.error) || 'No reply');
         var el = bubble('msg bot-msg', d.reply);
         el.setAttribute('data-status', d.status || '');

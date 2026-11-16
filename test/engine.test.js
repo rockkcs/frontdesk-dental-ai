@@ -155,3 +155,36 @@ test('small talk does not swallow real questions', () => {
   assert.strictEqual(answer('ok what about root canal price', clinic).kind, 'answer');
   assert.strictEqual(answer('Yes do you do Invisalign', clinic).status, 'needs human');
 });
+
+// Context from earlier in the same chat
+test('context: second booking request does not open another ticket', () => {
+  const r = answer('I want to book an appointment', clinic, { openBooking: { id: 7, requested_time: null } });
+  assert.strictEqual(r.kind, 'booking_pending');
+  assert.strictEqual(r.ticket_ref, 7);
+  assert.ok(r.text.includes('already opened a ticket') && r.text.includes('2 working hours'), r.text);
+});
+test('context: a new time updates the open booking', () => {
+  const r = answer('Book me for Saturday 11 am', clinic, { openBooking: { id: 7, requested_time: null } });
+  assert.strictEqual(r.kind, 'booking_update');
+  assert.strictEqual(r.requested_time, 'Saturday 11 am');
+  assert.ok(r.text.includes('Saturday 11 am'), r.text);
+});
+test('context: ok / already done while a booking is open', () => {
+  for (const q of ['Ok', 'Already done', 'already booked']) {
+    const r = answer(q, clinic, { openBooking: { id: 7, requested_time: null }, lastKind: 'booking' });
+    assert.strictEqual(r.kind, 'booking_pending', q + ' -> ' + r.text);
+  }
+});
+test('context: quiet after goodbye, but real questions still answered', () => {
+  for (const q of ['Ok', 'Take care', 'thank you']) assert.ok(answer(q, clinic, { lastKind: 'bye' }).silent, q);
+  assert.ok(answer('How much is a root canal?', clinic, { lastKind: 'bye' }).text.includes('6,500'));
+});
+test('context: yes after the booking offer books it', () => {
+  const r = answer('yes please', clinic, { lastKind: 'no_advice' });
+  assert.strictEqual(r.kind, 'booking');
+  assert.strictEqual(r.status, 'needs human');
+});
+test('context: none given behaves as before', () => {
+  assert.strictEqual(answer('I want to book an appointment', clinic).kind, 'booking');
+  assert.strictEqual(answer('Ok', clinic).kind, 'ack');
+});

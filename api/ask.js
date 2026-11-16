@@ -16,7 +16,19 @@ module.exports = async (req, res) => {
   let clinic;
   try { clinic = await store.getClinic(); } catch (e) { clinic = require('../data/clinic-data.json'); }
 
-  const r = answer(q, clinic);
+  // What happened earlier in this chat (only for a real chat, never for the shared "anonymous" id).
+  const ctx = {};
+  if (patient !== 'anonymous') {
+    try {
+      const recent = await store.recentTickets(patient);
+      const ob = recent.find((t) => (t.kind === 'booking' || t.kind === 'booking_update') && t.status === 'needs human' && Date.now() - new Date(t.created_at).getTime() < 7 * 86400000);
+      if (ob) ctx.openBooking = { id: ob.id, requested_time: ob.requested_time && ob.requested_time !== 'not given' ? ob.requested_time : null };
+      if (recent[0]) ctx.lastKind = recent[0].kind;
+    } catch (e) { /* no context: answer as a fresh chat */ }
+  }
+
+  const r = answer(q, clinic, ctx);
+  if (r.silent) return send(res, 200, { silent: true, reply: '', status: r.status, kind: r.kind, ticket_id: null, last_message_id: 0, source: 'file', label: null });
   let reply = r.text;
   let source = 'file';
 
@@ -31,7 +43,11 @@ module.exports = async (req, res) => {
   let ticket = { ticket_id: null, last_message_id: 0 };
   let storeError = null;
   try {
-    ticket = await store.createTicket({ patient_id: patient, question: q, bot_reply: reply, status: r.status, kind: r.kind, requested_time: r.requested_time, lang: r.lang, source });
+    if (r.ticket_ref) {
+      ticket = await store.addToTicket(r.ticket_ref, patient, q, reply, r.kind === 'booking_update' ? r.requested_time : null);
+    } else {
+      ticket = await store.createTicket({ patient_id: patient, question: q, bot_reply: reply, status: r.status, kind: r.kind, requested_time: r.requested_time, lang: r.lang, source });
+    }
   } catch (e) {
     storeError = e.message;
     console.error('createTicket failed:', e.message);
