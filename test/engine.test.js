@@ -234,3 +234,30 @@ test('guard: rejects softened facts', () => {
   assert.ok(!passesGuard('Teeth whitening is Rs 8,000. It takes about 60 minutes.', draft, ['Rs 8,000']));
   assert.ok(passesGuard('Teeth whitening costs Rs 8,000, and the time needed is 60 minutes.', draft, ['Rs 8,000']));
 });
+
+// Booking outside the clinic's hours
+test('booking on an emergencies-only day says so, but still sends the request', () => {
+  const r = answer('is that possible to book on sunday 3pm', clinic);
+  assert.strictEqual(r.status, 'needs human');
+  assert.ok(r.requested_time.startsWith('Sunday 3pm'), r.requested_time);
+  assert.ok(r.text.includes('outside our booking hours') && r.text.includes('10:00 am to 2:00 pm, emergencies only') && r.text.includes('98000 00123'), r.text);
+});
+test('booking after closing time says so', () => {
+  const r = answer('Book Monday 9 pm', clinic);
+  assert.ok(r.text.includes('outside our booking hours') && r.text.includes('9:00 am to 8:00 pm'), r.text);
+});
+test('booking inside the hours is normal', () => {
+  for (const q of ['Book me Saturday 11 am', 'Book Tuesday 5 pm', 'I want an appointment on Wednesday at 10:30 am']) {
+    assert.ok(!answer(q, clinic).text.includes('outside'), q);
+  }
+});
+test('updating an open booking to a closed time says so', () => {
+  const r = answer('can I book on sunday 3pm', clinic, { openBooking: { id: 8, requested_time: 'Saturday 11 am', phone: '98452 31881' } });
+  assert.strictEqual(r.kind, 'booking_update');
+  assert.ok(r.text.includes('outside our booking hours') && r.text.includes('(#8)'), r.text);
+});
+test('other clinic: closed day', () => {
+  assert.ok(answer('Book Sunday 11 am', other).text.includes('Sunday: Closed'));
+  assert.ok(!answer('Book Saturday 10 am', other).text.includes('outside'));
+  assert.ok(answer('Book Saturday 2 pm', other).text.includes('outside'));
+});
