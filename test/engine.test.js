@@ -228,3 +228,9 @@ test('numbers in normal questions are not taken as a phone', () => {
   const r = answer('How much is a root canal?', clinic, { openBooking: { id: 5, phone: null } });
   assert.strictEqual(r.kind, 'answer');
 });
+
+test('guard: rejects softened facts', () => {
+  const draft = 'Teeth whitening: Rs 8,000. Time needed: 60 minutes.';
+  assert.ok(!passesGuard('Teeth whitening is Rs 8,000. It takes about 60 minutes.', draft, ['Rs 8,000']));
+  assert.ok(passesGuard('Teeth whitening costs Rs 8,000, and the time needed is 60 minutes.', draft, ['Rs 8,000']));
+});
