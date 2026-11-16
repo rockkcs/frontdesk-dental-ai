@@ -12,6 +12,8 @@ create table if not exists public.fd_tickets (
   requested_time text,
   lang text not null default 'en',
   source text not null default 'file',
+  patient_name text,
+  patient_phone text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -37,3 +39,8 @@ create index if not exists fd_messages_ticket_idx on public.fd_messages (ticket_
 alter table public.fd_tickets enable row level security;
 alter table public.fd_messages enable row level security;
 alter table public.fd_clinic enable row level security;
+
+-- Added later (safe to run on an existing project)
+alter table public.fd_tickets add column if not exists patient_name text;
+alter table public.fd_tickets add column if not exists patient_phone text;
+create index if not exists fd_tickets_phone_idx on public.fd_tickets (patient_phone) where patient_phone is not null;

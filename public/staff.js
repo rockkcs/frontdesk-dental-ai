@@ -40,6 +40,8 @@
 
     var q = el('p', 'line q'); q.appendChild(el('b', null, 'Patient: ')); q.appendChild(el('span', 'q-text', t.question)); a.appendChild(q);
     var b = el('p', 'line a'); b.appendChild(el('b', null, 'Bot: ')); b.appendChild(el('span', 'a-text', t.bot_reply)); a.appendChild(b);
+    var c = el('p', 'line contact'); c.appendChild(el('b', null, 'Contact: ')); c.appendChild(el('span', 'contact-text'));
+    a.appendChild(c);
     if (t.requested_time) {
       var bk = el('p', 'line booking'); bk.appendChild(el('b', null, 'Booking request for: ')); bk.appendChild(el('span', 'booking-time', t.requested_time));
       a.setAttribute('data-booking-time', t.requested_time);
@@ -77,6 +79,12 @@
     a.querySelector('.badge.prio').textContent = 'Priority: ' + prio;
     a.querySelector('.age').textContent = (t.status === 'urgent' || t.status === 'needs human' ? 'Waiting ' : 'Raised ') + ageText(min) + (overdue ? ' · overdue' : '');
     a.querySelector('.close-btn').hidden = t.status === 'closed';
+    var contact = [t.patient_name, t.patient_phone].filter(Boolean).join(' · ');
+    a.querySelector('.contact').hidden = !contact;
+    a.querySelector('.contact-text').textContent = contact;
+    if (t.patient_phone) a.setAttribute('data-phone', t.patient_phone);
+    var bt = a.querySelector('.booking-time');
+    if (bt && t.requested_time) bt.textContent = t.requested_time;
     var thread = a.querySelector('.thread');
     (t.replies || []).forEach(function (r) {
       if (thread.querySelector('[data-reply="' + r.id + '"]')) return;

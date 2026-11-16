@@ -188,3 +188,36 @@ test('context: none given behaves as before', () => {
   assert.strictEqual(answer('I want to book an appointment', clinic).kind, 'booking');
   assert.strictEqual(answer('Ok', clinic).kind, 'ack');
 });
+
+// Name and phone number for bookings
+test('booking asks for name and phone, and still opens the ticket with the time', () => {
+  const r = answer('Book me Saturday 11 am', clinic);
+  assert.strictEqual(r.kind, 'booking');
+  assert.strictEqual(r.status, 'needs human');
+  assert.strictEqual(r.requested_time, 'Saturday 11 am');
+  assert.ok(r.text.includes('Saturday 11 am') && r.text.includes('name and phone number'), r.text);
+});
+test('name and phone in the booking message are kept, no question asked', () => {
+  const r = answer('Book me Saturday 11 am, Ravi 9876543210', clinic);
+  assert.strictEqual(r.contact.phone, '98765 43210');
+  assert.strictEqual(r.contact.name, 'Ravi');
+  assert.strictEqual(r.requested_time, 'Saturday 11 am');
+  assert.ok(!r.text.includes('name and phone number'), r.text);
+});
+test('a reply with name and phone goes onto the open booking', () => {
+  const r = answer('Ravi Kumar 9876543210', clinic, { openBooking: { id: 5, requested_time: null, phone: null } });
+  assert.strictEqual(r.kind, 'contact');
+  assert.strictEqual(r.ticket_ref, 5);
+  assert.ok(r.text.includes('Ravi Kumar') && r.text.includes('98765 43210') && r.text.includes('2 working hours'), r.text);
+});
+test('phone only: asks for the name, then takes the name', () => {
+  const r1 = answer('9876543210', clinic, { openBooking: { id: 5, phone: null } });
+  assert.ok(r1.text.includes('share your name'), r1.text);
+  const r2 = answer('Priya Sharma', clinic, { openBooking: { id: 5, phone: '98765 43210', name: null } });
+  assert.strictEqual(r2.kind, 'contact');
+  assert.strictEqual(r2.contact.name, 'Priya Sharma');
+});
+test('numbers in normal questions are not taken as a phone', () => {
+  const r = answer('How much is a root canal?', clinic, { openBooking: { id: 5, phone: null } });
+  assert.strictEqual(r.kind, 'answer');
+});
