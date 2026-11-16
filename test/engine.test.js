@@ -169,6 +169,13 @@ test('context: a new time updates the open booking', () => {
   assert.strictEqual(r.requested_time, 'Saturday 11 am');
   assert.ok(r.text.includes('Saturday 11 am'), r.text);
 });
+test('context: ok after name and number were given gets a friendly reply', () => {
+  for (const q of ['Ok', 'ok thank you', 'Already done']) {
+    const r = answer(q, clinic, { openBooking: { id: 1, requested_time: null, phone: '98452 31881', name: 'Raj' }, lastKind: 'booking' });
+    assert.ok(r.text.startsWith('You are welcome'), q + ' -> ' + r.text);
+    assert.strictEqual(r.ticket_ref, undefined);
+  }
+});
 test('context: ok / already done while a booking is open', () => {
   for (const q of ['Ok', 'Already done', 'already booked']) {
     const r = answer(q, clinic, { openBooking: { id: 7, requested_time: null }, lastKind: 'booking' });
