@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Staff | Tickets</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="staff-page">
+  <header class="top">
+    <div class="top-text">
+      <h1 id="clinic-name">Staff desk</h1>
+      <p class="sub">All patient tickets. Type a reply and it shows in that patient's chat.</p>
+    </div>
+    <button id="theme-toggle" class="icon-btn" type="button" aria-label="Switch between light and dark">Dark</button>
+  </header>
+
+  <main class="staff-main">
+    <section class="bar">
+      <div id="counts" class="counts" aria-live="polite"></div>
+      <label class="sort">Sort by
+        <select id="sort-by">
+          <option value="newest">Newest first</option>
+          <option value="priority">Priority, then oldest</option>
+        </select>
+      </label>
+    </section>
+
+    <p id="store-note" class="note" hidden></p>
+    <p id="load-error" class="note error" hidden></p>
+
+    <section id="ticket-queue" aria-label="Tickets"></section>
+    <p id="empty" class="note" hidden>No tickets yet. Ask a question on the chat page and it will show here.</p>
+
+    <details id="clinic-editor" class="editor">
+      <summary>Edit clinic data</summary>
+      <p class="note">Change a value and press Save. The bot uses the new value from the very next question.</p>
+      <form id="clinic-form">
+        <div id="clinic-fields"></div>
+        <details class="raw">
+          <summary>Advanced: edit everything as text (JSON)</summary>
+          <textarea id="clinic-json" rows="12" spellcheck="false" aria-label="Clinic data as JSON"></textarea>
+          <button type="button" id="clinic-save-json">Save text version</button>
+        </details>
+        <div class="row">
+          <button type="submit" id="clinic-save">Save clinic data</button>
+          <span id="clinic-status" class="note" aria-live="polite"></span>
+        </div>
+      </form>
+    </details>
+  </main>
+
+  <script src="/staff.js"></script>
+</body>
+</html>

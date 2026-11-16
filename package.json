@@ -1,0 +1,11 @@
+{
+  "name": "frontdesk-ai-dental",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Front desk chat bot for a dental clinic. Answers only from the clinic file, with tickets for staff.",
+  "scripts": {
+    "test": "node --test test/engine.test.js",
+    "dev": "node dev-server.js"
+  },
+  "engines": { "node": ">=20" }
+}

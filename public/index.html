@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Front Desk | Dental Clinic</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="chat-page">
+  <header class="top">
+    <div class="top-text">
+      <h1 id="clinic-name">Front Desk</h1>
+      <p class="sub">Ask about timings, doctors, prices, insurance or location</p>
+    </div>
+    <button id="theme-toggle" class="icon-btn" type="button" aria-label="Switch between light and dark">Dark</button>
+  </header>
+
+  <main id="chat-log" aria-live="polite">
+    <div id="history"></div>
+    <p class="hint-msg">Hello. I am the clinic's front desk assistant. For an emergency, please call the clinic right away.</p>
+  </main>
+
+  <div id="quick-replies" aria-label="Quick questions">
+    <button type="button" class="quick-reply" data-q="What are your timings?">Timings</button>
+    <button type="button" class="quick-reply" data-q="What are your prices?">Price list</button>
+    <button type="button" class="quick-reply" data-q="Who are your doctors?">Doctors</button>
+    <button type="button" class="quick-reply" data-q="Where is the clinic?">Location</button>
+    <button type="button" class="quick-reply" data-q="Which insurance do you accept?">Insurance</button>
+    <button type="button" class="quick-reply" data-q="I want to book an appointment">Book a visit</button>
+  </div>
+
+  <form id="chat-form" autocomplete="off">
+    <input id="chat-input" type="text" placeholder="Type your question" aria-label="Type your question" maxlength="500" enterkeyhint="send">
+    <button id="chat-send" type="submit">Send</button>
+  </form>
+
+  <script src="/chat.js"></script>
+</body>
+</html>

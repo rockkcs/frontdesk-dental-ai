@@ -1,0 +1,38 @@
+{
+  "note": "A made-up second clinic, used only by the tests to prove nothing is fixed to one clinic.",
+  "clinic": {
+    "name": "Lakeside Smiles",
+    "address": "14 Lake View Road, Indiranagar, Bengaluru 560038",
+    "landmark": "Next to the metro station",
+    "phone": "080 4444 0199",
+    "emergency_phone": "90000 55555",
+    "whatsapp": "90000 55556",
+    "languages": ["English", "Kannada"],
+    "parking": "Paid parking on the street",
+    "wheelchair_access": "Ramp at the main gate and a lift to the first floor"
+  },
+  "hours": {
+    "monday_to_friday": "10:00 am to 7:00 pm",
+    "saturday": "8:30 am to 1:00 pm",
+    "sunday": "Closed",
+    "public_holidays": "Closed"
+  },
+  "doctors": [
+    {"name": "Dr. Arjun Pillai", "role": "General dentist, root canals and crowns", "days": "Monday to Friday"},
+    {"name": "Dr. Kavya Menon", "role": "Paediatric dentist, children under 12", "days": "Wednesday and Friday"}
+  ],
+  "services": [
+    {"name": "Consultation", "price": "Rs 300"},
+    {"name": "Root canal treatment", "price": "Rs 4,800 to Rs 7,200", "note": "One or two visits"},
+    {"name": "Veneers", "price": "Rs 12,000 per tooth"},
+    {"name": "Teeth cleaning", "price": "Rs 900", "duration": "30 minutes"}
+  ],
+  "policies": {
+    "appointments": "Book on the phone. Cancel at least 2 hours before.",
+    "payment": "UPI and cash only.",
+    "insurance": "Cashless with HDFC Ergo only. For other insurers we give a bill you can claim.",
+    "children": "Children are seen by Dr. Kavya Menon. A parent must be present."
+  },
+  "emergency_rules": "Heavy bleeding, swelling of the face or trouble breathing: call the emergency number right away.",
+  "bot_rules": ["Answer only from this file."]
+}
