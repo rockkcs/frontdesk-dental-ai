@@ -163,11 +163,21 @@ test('context: second booking request does not open another ticket', () => {
   assert.strictEqual(r.ticket_ref, 7);
   assert.ok(r.text.includes('already opened a ticket') && r.text.includes('2 working hours'), r.text);
 });
-test('context: a new time updates the open booking', () => {
-  const r = answer('Book me for Saturday 11 am', clinic, { openBooking: { id: 7, requested_time: null } });
+test('context: a new time is saved on the open booking, with the already-opened reply', () => {
+  const r = answer('Book me for Saturday 11 am', clinic, { openBooking: { id: 7, requested_time: null, phone: '98452 31881' } });
   assert.strictEqual(r.kind, 'booking_update');
   assert.strictEqual(r.requested_time, 'Saturday 11 am');
-  assert.ok(r.text.includes('Saturday 11 am'), r.text);
+  assert.ok(r.text.includes('already opened a ticket') && r.text.includes('(#7)'), r.text);
+});
+test('context: what about Monday at 7:30 pm is about the open booking', () => {
+  const ctx = { openBooking: { id: 7, requested_time: 'Sunday 4pm (outside hours)', phone: '98452 31881' } };
+  const r = answer('what about monday at 7:30pm', clinic, ctx);
+  assert.strictEqual(r.kind, 'booking_update', r.text);
+  assert.ok(r.text.startsWith('I have already opened a ticket for your booking request (#7)'), r.text);
+  assert.strictEqual(answer('is tuesday 11 am possible?', clinic, ctx).kind, 'booking_update');
+  // real questions with a day still get answered
+  assert.ok(answer('What time do you open on Saturday?', clinic, ctx).text.includes('9:00 am'));
+  assert.ok(answer('Which doctors are available on Tuesday?', clinic, ctx).text.includes('Imran'));
 });
 test('context: ok after name and number were given gets a friendly reply', () => {
   for (const q of ['Ok', 'ok thank you', 'Already done']) {
