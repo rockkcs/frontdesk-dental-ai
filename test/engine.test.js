@@ -287,3 +287,10 @@ test('small talk: real one-word questions still open a ticket', () => {
   assert.strictEqual(answer('Invisalign?', clinic).status, 'needs human');
   assert.strictEqual(answer('Oh do you do veneers?', clinic).status, 'needs human');
 });
+
+test('small talk: praise gets a friendly reply, not a ticket', () => {
+  for (const q of ['wonderful', 'Wonderful!', 'amazing', 'great thanks', 'that was helpful', 'good job', 'super', 'perfect']) {
+    const r = answer(q, clinic);
+    assert.strictEqual(r.kind, 'thanks', q + ' -> ' + r.text);
+  }
+});
