@@ -131,3 +131,8 @@ test('guard: a label colon does not free the next word', () => {
   assert.ok(!passesGuard('Insurance: Cashless with Star Health and Niva Bupa, yes.', draft, []));
   assert.ok(passesGuard('Yes, for insurance we are cashless with Star Health and Niva Bupa.', draft, []));
 });
+
+test('guard: rejects added offers or invitations', () => {
+  const draft = 'Root canal treatment: Rs 6,500 to Rs 9,000. Usually two visits.';
+  assert.ok(!passesGuard('Root canal treatment costs between Rs 6,500 to Rs 9,000. This treatment usually takes two visits. We are happy to help you schedule your appointment!', draft, []));
+});
