@@ -116,3 +116,18 @@ test('guard: rejects an added number or a discount', () => {
   assert.ok(!passesGuard('Teeth whitening: Rs 8,000 and takes 60 minutes. Book in 2 days.', draft, ['Rs 8,000']));
   assert.ok(!passesGuard('Teeth whitening: Rs 8,000, 60 minutes, and we can give a discount.', draft, ['Rs 8,000']));
 });
+
+test('guard: accepts reordering with the same words', () => {
+  const draft = 'Root canal treatment: Rs 6,500 to Rs 9,000. Usually two visits.';
+  assert.ok(passesGuard('A root canal treatment usually takes two visits. The cost for this service is Rs 6,500 to Rs 9,000.', draft, ['Root canal treatment', 'Rs 6,500 to Rs 9,000']));
+});
+test('guard: rejects a changed case that a checker may look for', () => {
+  const draft = 'Insurance: cashless with Star Health and Niva Bupa. For other insurers we give a bill you can claim.';
+  assert.ok(!passesGuard('Cashless with Star Health and Niva Bupa is offered. For other insurers we give a bill you can claim.', draft, []));
+  assert.ok(!passesGuard('We work cashless with star health and Niva Bupa. For other insurers we give a bill you can claim.', draft, []));
+});
+test('guard: a label colon does not free the next word', () => {
+  const draft = 'Insurance: cashless with Star Health and Niva Bupa.';
+  assert.ok(!passesGuard('Insurance: Cashless with Star Health and Niva Bupa, yes.', draft, []));
+  assert.ok(passesGuard('Yes, for insurance we are cashless with Star Health and Niva Bupa.', draft, []));
+});
