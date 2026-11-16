@@ -261,3 +261,19 @@ test('other clinic: closed day', () => {
   assert.ok(!answer('Book Saturday 10 am', other).text.includes('outside'));
   assert.ok(answer('Book Saturday 2 pm', other).text.includes('outside'));
 });
+
+test('small talk: sounds and short replies', () => {
+  for (const q of ['Oh ok', 'ha ok', 'Ohhh okkk', 'ah okay', 'hmm ok', 'acha', 'achha ok', 'I see', 'got it', 'Right', 'ok fine', 'alright then', 'oh', 'Okie', 'cool', 'will wait', 'ok i will wait', 'अच्छा', 'ओह ठीक है', 'హా సరే'.replace('హా ', 'ఓ ')]) {
+    const r = answer(q, clinic);
+    assert.notStrictEqual(r.status, 'needs human', q + ' -> ' + r.text);
+    assert.ok(['ack', 'thanks', 'bye'].includes(r.kind), q + ' -> ' + r.kind);
+  }
+});
+test('small talk: oh ok after a booking with a number is friendly', () => {
+  const r = answer('Oh ok', clinic, { openBooking: { id: 11, requested_time: 'Monday 8pm (outside hours)', phone: '98452 31881' } });
+  assert.ok(r.text.startsWith('You are welcome'), r.text);
+});
+test('small talk: real one-word questions still open a ticket', () => {
+  assert.strictEqual(answer('Invisalign?', clinic).status, 'needs human');
+  assert.strictEqual(answer('Oh do you do veneers?', clinic).status, 'needs human');
+});
