@@ -10,6 +10,6 @@ module.exports = async (req, res) => {
     try { await store.listTickets(); storeOk = true; } catch (e) { storeError = e.message; }
   }
   const out = { ok: true, ai_key_present: ai.hasAI(), store_configured: store.hasStore(), store_key_type: store.KEY_KIND, store_working: storeOk, store_error: storeError };
-  if (req.query && req.query.ai === '1') out.ai_check = await ai.diagnose();
+  if (req.query && req.query.ai === '1') out.ai_check = await ai.diagnose(/^[\w.-]{3,60}$/.test(req.query.model || '') ? req.query.model : undefined);
   send(res, 200, out);
 };
