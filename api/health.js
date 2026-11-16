@@ -9,5 +9,7 @@ module.exports = async (req, res) => {
   if (store.hasStore()) {
     try { await store.listTickets(); storeOk = true; } catch (e) { storeError = e.message; }
   }
-  send(res, 200, { ok: true, ai_key_present: ai.hasAI(), store_configured: store.hasStore(), store_working: storeOk, store_error: storeError });
+  const out = { ok: true, ai_key_present: ai.hasAI(), store_configured: store.hasStore(), store_key_type: store.KEY_KIND, store_working: storeOk, store_error: storeError };
+  if (req.query && req.query.ai === '1') out.ai_check = await ai.diagnose();
+  send(res, 200, out);
 };
