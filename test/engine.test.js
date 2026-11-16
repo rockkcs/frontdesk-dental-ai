@@ -136,3 +136,22 @@ test('guard: rejects added offers or invitations', () => {
   const draft = 'Root canal treatment: Rs 6,500 to Rs 9,000. Usually two visits.';
   assert.ok(!passesGuard('Root canal treatment costs between Rs 6,500 to Rs 9,000. This treatment usually takes two visits. We are happy to help you schedule your appointment!', draft, []));
 });
+
+const talk = [
+  ['No thank you', 'Thank you for chatting'], ['no thanks', 'Thank you for chatting'], ['Ok thank you', 'You are welcome'],
+  ['Ok thank you very much', 'You are welcome'], ['Thank you very much', 'You are welcome'], ['Ok', 'Sure.'], ['okay', 'Sure.'],
+  ['bye', 'Thank you for chatting'], ["No, that's all", 'Thank you for chatting'], ['yes please', 'Sure.'], ['nothing else', 'Thank you for chatting'],
+  ['धन्यवाद', 'धन्यवाद'], ['नहीं धन्यवाद', 'बात करने'], ['ధన్యవాదాలు', 'ధన్యవాదాలు']
+];
+for (const [q, inc] of talk) {
+  test('small talk: ' + q, () => {
+    const r = answer(q, clinic);
+    assert.strictEqual(r.status, 'answered', r.text);
+    assert.ok(r.text.includes(inc), r.text);
+  });
+}
+test('small talk does not swallow real questions', () => {
+  assert.strictEqual(answer('No, I want to know the price of braces', clinic).kind, 'answer');
+  assert.strictEqual(answer('ok what about root canal price', clinic).kind, 'answer');
+  assert.strictEqual(answer('Yes do you do Invisalign', clinic).status, 'needs human');
+});
